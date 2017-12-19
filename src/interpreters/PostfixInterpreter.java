@@ -32,20 +32,20 @@ public class PostfixInterpreter {
         return this.run(postfix);
     }
     
-    public String format(String input) {
+    private String format(String input) {
         for(char c : SYMBOLS.toCharArray()) {
             input = input.replace(String.valueOf(c), " " + c + " ");
         }
-
+        
         input = input.replaceAll("[ ]+", " ");
         
         return input.trim();
     }
     
-    public String toPostfix(String infix) throws OperatorMismatchException, MismatchedParenthesisException, SyntaxException {
+    private String toPostfix(String infix) throws OperatorMismatchException, MismatchedParenthesisException, SyntaxException {
         StringBuilder postfix = new StringBuilder();
         Stack<String> stack = new Stack<>();
-//        boolean negativeFunc = false;
+        //        boolean negativeFunc = false;
         
         String[] split = infix.split(" ");
         
@@ -54,10 +54,8 @@ public class PostfixInterpreter {
         for(int i = 0, splitLength = split.length; i < splitLength; i++) {
             String token = split[i];
             if(MathHelper.isNumber(token) || MathHelper.isConst(token)) {
-                if(neg)
-                    postfix.append("-").append(token);
-                else
-                    postfix.append(token);
+                if(neg) postfix.append("-").append(token);
+                else postfix.append(token);
                 neg = false;
             }
             else if(MathHelper.isFunction(token)) {
@@ -70,8 +68,7 @@ public class PostfixInterpreter {
                 }
             }
             else if(MathHelper.isOperator(token)) {
-                if(token.equals("-"))
-                {
+                if(token.equals("-")) {
                     if(i == 0) {
                         neg = true;
                         continue;
@@ -79,9 +76,7 @@ public class PostfixInterpreter {
                 }
                 
                 postfix.append(" "); // add a space to split the numbers
-                while(!stack.empty() && MathHelper.isOperator(stack.peek()) && ((!token.equals("^") &&
-                        precedenceTable.get(token) <= precedenceTable.get(stack.peek())) ||
-                        (token.equals("^") && precedenceTable.get(token) < precedenceTable.get(stack.peek())))) {
+                while(!stack.empty() && MathHelper.isOperator(stack.peek()) && ((!token.equals("^") && precedenceTable.get(token) <= precedenceTable.get(stack.peek())) || (token.equals("^") && precedenceTable.get(token) < precedenceTable.get(stack.peek())))) {
                     postfix.append(stack.pop()).append(" ");
                 }
                 stack.push(token);
@@ -123,7 +118,7 @@ public class PostfixInterpreter {
         return postfix.toString().trim();
     }
     
-    public double run(String postfix) throws OperatorMismatchException, SyntaxException, ArgumentException, ConstantNotFoundException, FunctionNotFoundException {
+    private double run(String postfix) throws OperatorMismatchException, SyntaxException, ArgumentException, ConstantNotFoundException, FunctionNotFoundException {
         Stack<Double> stack = new Stack<>();
         
         if(postfix.equals("")) throw new IllegalArgumentException("Postfix cannot be empty");
